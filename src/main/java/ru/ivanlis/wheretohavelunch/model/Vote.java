@@ -1,6 +1,5 @@
 package ru.ivanlis.wheretohavelunch.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Vote extends AbstractBaseEntity {
@@ -9,8 +8,6 @@ public class Vote extends AbstractBaseEntity {
     private Integer restaurantId;
 
     private LocalDateTime voteDateTime;
-
-    private LocalDate voteDate;
 
     public Vote() {
     }
@@ -46,14 +43,6 @@ public class Vote extends AbstractBaseEntity {
         this.voteDateTime = voteDateTime;
     }
 
-    public LocalDate getVoteDate() {
-        return voteDate;
-    }
-
-    public void setVoteDate(LocalDate voteDate) {
-        this.voteDate = voteDate;
-    }
-
     @Override
     public String toString() {
         return "Vote{" +
@@ -61,7 +50,6 @@ public class Vote extends AbstractBaseEntity {
                 ", userId=" + userId +
                 ", restaurantId=" + restaurantId +
                 ", voteDateTime=" + voteDateTime +
-                ", voteDate=" + voteDate +
                 '}';
     }
 }
