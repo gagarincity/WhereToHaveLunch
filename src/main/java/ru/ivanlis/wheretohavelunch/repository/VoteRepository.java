@@ -1,60 +1,28 @@
 package ru.ivanlis.wheretohavelunch.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.ivanlis.wheretohavelunch.model.User;
 import ru.ivanlis.wheretohavelunch.model.Vote;
-import ru.ivanlis.wheretohavelunch.repository.crud.CrudVoteRepository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public class VoteRepository implements BaseRepository<Vote> {
-    private final CrudVoteRepository voteRepository;
-
-    public VoteRepository(CrudVoteRepository voteRepository) {
-        this.voteRepository = voteRepository;
-    }
-
-    @Override
-    public List<Vote> getAll() {
-        return (List<Vote>) voteRepository.findAll();
-    }
-
-    @Override
-    public Vote getById(int id) {
-        return voteRepository.findById(id).orElse(null);
-    }
-
-    @Override
+public interface VoteRepository extends JpaRepository<Vote, Integer> {
     @Transactional
-    public void delete(int id) {
-        voteRepository.delete(id);
-    }
+    @Modifying
+    @Query("DELETE FROM Vote v WHERE v.id=:id")
+    int delete(@Param("id") int id);
 
-    @Override
-    @Transactional
-    public Vote create(Vote vote) {
-        return voteRepository.save(vote);
-    }
+    @Query("SELECT v FROM Vote v WHERE v.user.id=:userId ORDER BY v.localDate DESC")
+    List<Vote> getAll(@Param("userId") int userId);
 
-    @Override
-    @Transactional
-    public void update(Vote vote, int id) {
-        vote.setId(id);
-        voteRepository.save(vote);
-    }
+    Vote getByUserAndLocalDate(User user, LocalDate localDate);
 
-    public Vote getByUserId(int userId) {
-        return voteRepository.getByUserId(userId);
-    }
-
-    public Vote getByUserIdAndDate(int userId, LocalDate date) {
-        return voteRepository.getByUserIdAndDate(userId, date);
-    }
-
-    public List<Vote> getBetweenDatesIncluding(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return voteRepository.getBetweenDatesIncluding(startDateTime, endDateTime);
-    }
+    Vote getByUserIdAndLocalDate(int userId, LocalDate localDate);
 }

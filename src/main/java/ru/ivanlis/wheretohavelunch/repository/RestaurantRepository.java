@@ -1,50 +1,18 @@
 package ru.ivanlis.wheretohavelunch.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ivanlis.wheretohavelunch.model.Restaurant;
-import ru.ivanlis.wheretohavelunch.repository.crud.CrudRestaurantRepository;
-
-import java.util.List;
 
 @Repository
-public class RestaurantRepository implements BaseRepository<Restaurant> {
-    private final CrudRestaurantRepository restaurantRepository;
-
-    public RestaurantRepository(CrudRestaurantRepository restaurantRepository) {
-        this.restaurantRepository = restaurantRepository;
-    }
-
-    @Override
-    public List<Restaurant> getAll() {
-        return (List<Restaurant>) restaurantRepository.findAll();
-    }
-
-    @Override
-    public Restaurant getById(int id) {
-        return restaurantRepository.findById(id).orElse(null);
-    }
-
-    @Override
+@Transactional(readOnly = true)
+public interface RestaurantRepository extends JpaRepository<Restaurant, Integer> {
     @Transactional
-    public void delete(int id) {
-        restaurantRepository.delete(id);
-    }
-
-    @Override
-    @Transactional
-    public Restaurant create(Restaurant restaurant) {
-        return restaurantRepository.save(restaurant);
-    }
-
-    @Override
-    @Transactional
-    public void update(Restaurant restaurant, int id) {
-        restaurant.setId(id);
-        restaurantRepository.save(restaurant);
-    }
-
-    public Restaurant getByRestaurantName(String restaurantName) {
-        return restaurantRepository.getByRestaurantName(restaurantName);
-    }
+    @Modifying
+    @Query("DELETE FROM Restaurant r WHERE r.id=:id")
+    int delete(@Param("id") int id);
 }
