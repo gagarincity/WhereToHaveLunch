@@ -1,39 +1,32 @@
 package ru.ivanlis.wheretohavelunch.service;
 
+import org.springframework.stereotype.Service;
 import ru.ivanlis.wheretohavelunch.model.Restaurant;
 import ru.ivanlis.wheretohavelunch.repository.RestaurantRepository;
+import ru.ivanlis.wheretohavelunch.util.exception.NotFoundException;
 
-import java.util.List;
-
-public class RestaurantService implements BaseService<Restaurant> {
+@Service
+public class RestaurantService {
     private final RestaurantRepository repository;
 
     public RestaurantService(RestaurantRepository repository) {
         this.repository = repository;
     }
 
-    @Override
-    public List<Restaurant> getAll() {
-        return null;
+
+    public Restaurant create(Restaurant restaurant) {
+        return repository.save(restaurant);
     }
 
-    @Override
-    public Restaurant getById(int id) {
-        return null;
-    }
-
-    @Override
-    public Restaurant save(Restaurant o) {
-        return null;
-    }
-
-    @Override
-    public void update(Restaurant o, int id) {
-
-    }
-
-    @Override
     public void delete(int id) {
+        repository.delete(id);
+    }
 
+    public Restaurant get(int id) {
+        return repository.findById(id).orElseThrow(() -> new NotFoundException("Not found " + id));
+    }
+
+    public void update(Restaurant restaurant) {
+        repository.save(restaurant);
     }
 }
