@@ -3,7 +3,6 @@ package ru.ivanlis.wheretohavelunch.model;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
@@ -36,8 +35,7 @@ public class User extends AbstractBaseEntity {
     @Size(min = 5, max = 100)
     private String password;
 
-    @Column(name = "registered", nullable = false, columnDefinition = "timestamp default now()")
-    @NotNull
+    @Column(name = "registered", nullable = false)
     private Date registered = new Date();
 
     public User() {
