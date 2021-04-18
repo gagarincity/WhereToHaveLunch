@@ -9,41 +9,42 @@ import java.util.List;
 
 @Repository
 public class UserRepository implements BaseRepository<User> {
-    private final CrudUserRepository crudUserRepository;
+    private final CrudUserRepository userRepository;
 
-    public UserRepository(CrudUserRepository crudUserRepository) {
-        this.crudUserRepository = crudUserRepository;
+    public UserRepository(CrudUserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
     public List<User> getAll() {
-        return crudUserRepository.findAll();
+        return (List<User>) userRepository.findAll();
     }
 
     @Override
     public User getById(int id) {
-        return crudUserRepository.findById(id).orElse(null);
+        return userRepository.findById(id).orElse(null);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void delete(int id) {
-        crudUserRepository.delete(id);
+        userRepository.delete(id);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public User create(User user) {
-        return crudUserRepository.save(user);
+        return userRepository.save(user);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void update(User user, int id) {
-        crudUserRepository.save(user);
+        user.setId(id);
+        userRepository.save(user);
     }
 
-    public User getByEmail(String email) {
-        return crudUserRepository.getByEmail(email);
+    public User getByUserEmail(String email) {
+        return userRepository.getByUserEmail(email);
     }
 }
