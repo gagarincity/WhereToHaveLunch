@@ -2,31 +2,31 @@ package ru.ivanlis.wheretohavelunch.model;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
-@Table(name = "dishes")
+@Table(name = "dish", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id", "name", "localdate"}
+        , name = "dish_unique_restaurant_name_date_idx")})
 public class Dish extends AbstractBaseEntity {
 
-    @Column(name = "date_time", nullable = false)
-    private LocalDateTime dateTime;
+    @Column(name = "localdate", nullable = false)
+    private LocalDate localDate = LocalDate.now();
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "name", nullable = false)
     @NotBlank
     @Size(min = 2, max = 120)
-    private String description;
+    private String name;
 
     @Column(name = "price", nullable = false)
-    @Range(min = 0, max = 50000)
-    private BigDecimal price;
+    @Positive
+    private Long price;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Restaurant restaurant;
@@ -34,39 +34,39 @@ public class Dish extends AbstractBaseEntity {
     public Dish() {
     }
 
-    public Dish(LocalDateTime dateTime, String description, BigDecimal price, Restaurant restaurant) {
-        this(null, dateTime, description, price, restaurant);
+    public Dish(Dish d) {
+        this(d.getId(), d.getLocalDate(), d.getName(), d.getPrice(), d.getRestaurant());
     }
 
-    public Dish(Integer id, LocalDateTime dateTime, String description, BigDecimal price, Restaurant restaurant) {
+    public Dish(Integer id, LocalDate localDate, String name, Long price, Restaurant restaurant) {
         super(id);
-        this.dateTime = dateTime;
-        this.description = description;
+        this.localDate = localDate;
+        this.name = name;
         this.price = price;
         this.restaurant = restaurant;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public LocalDate getLocalDate() {
+        return localDate;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setLocalDate(LocalDate localDate) {
+        this.localDate = localDate;
     }
 
-    public String getDescription() {
-        return description;
+    public String getName() {
+        return name;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public BigDecimal getPrice() {
+    public Long getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(Long price) {
         this.price = price;
     }
 
@@ -82,10 +82,15 @@ public class Dish extends AbstractBaseEntity {
     public String toString() {
         return "Dish{" +
                 "id=" + id +
-                ", dateTime=" + dateTime +
-                ", description='" + description + '\'' +
+                ", localDate=" + localDate +
+                ", name='" + name + '\'' +
                 ", price=" + price +
                 ", restaurant=" + restaurant +
                 '}';
+    }
+
+    @Override
+    public int id() {
+        return id;
     }
 }

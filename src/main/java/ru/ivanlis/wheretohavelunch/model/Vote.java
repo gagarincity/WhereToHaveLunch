@@ -1,77 +1,85 @@
 package ru.ivanlis.wheretohavelunch.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
-@Table(name = "votes")
+@Table(name = "vote", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "localdate"}
+        , name = "vote_unique_user_date_idx")})
 public class Vote extends AbstractBaseEntity {
-    @Column(name = "user_id")
-    private Integer userId;
+    public static final LocalTime VOTE_FINISH = LocalTime.of(11, 0);
 
-    @Column(name = "restaurant_id")
-    private Integer restaurantId;
+    @Column(name = "localdate", nullable = false)
+    @NotNull
+    private LocalDate localDate = LocalDate.now();
 
-    @Column(name = "vote_date_time", nullable = false)
-    private LocalDateTime voteDateTime;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @NotNull
+    private User user;
 
-    @Column(name = "vote_date", nullable = false)
-    private LocalDate voteDate;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @NotNull
+    private Restaurant restaurant;
 
     public Vote() {
     }
 
-    public Vote(Integer id, Integer userId, Integer restaurantId, LocalDateTime voteDateTime, LocalDate voteDate) {
+    public Vote(LocalDate localDate, User user, Restaurant restaurant) {
+        this(null, localDate, user, restaurant);
+    }
+
+    public Vote(Integer id, LocalDate localDate, User user, Restaurant restaurant) {
         super(id);
-        this.userId = userId;
-        this.restaurantId = restaurantId;
-        this.voteDateTime = voteDateTime;
-        this.voteDate = voteDate;
+        this.localDate = localDate;
+        this.user = user;
+        this.restaurant = restaurant;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public LocalDate getLocalDate() {
+        return localDate;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setLocalDate(LocalDate localDate) {
+        this.localDate = localDate;
     }
 
-    public Integer getRestaurantId() {
-        return restaurantId;
+    public User getUser() {
+        return user;
     }
 
-    public void setRestaurantId(Integer restaurantId) {
-        this.restaurantId = restaurantId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public LocalDateTime getVoteDateTime() {
-        return voteDateTime;
+    public Restaurant getRestaurant() {
+        return restaurant;
     }
 
-    public void setVoteDateTime(LocalDateTime voteDateTime) {
-        this.voteDateTime = voteDateTime;
-    }
-
-    public LocalDate getVoteDate() {
-        return voteDate;
-    }
-
-    public void setVoteDate(LocalDate voteDate) {
-        this.voteDate = voteDate;
+    public void setRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
     }
 
     @Override
     public String toString() {
         return "Vote{" +
                 "id=" + id +
-                ", userId=" + userId +
-                ", restaurantId=" + restaurantId +
-                ", voteDateTime=" + voteDateTime +
-                ", voteDate=" + voteDate +
+                ", localDate=" + localDate +
+                ", user=" + user +
+                ", restaurant=" + restaurant +
                 '}';
+    }
+
+    @Override
+    public int id() {
+        return id;
     }
 }
